@@ -10,10 +10,15 @@ module Slack
     attr_reader :endpoint, :default_payload
 
     def initialize webhook_url, options={}
-      @endpoint        = URI.parse webhook_url
+			if options[:team] && options[:token]
+				@endpoint = URI.parse "https://#{options[:team]}.slack.com/services/hooks/incoming-webhook?token=#{options[:token]}"
+			else
+				@endpoint = URI.parse webhook_url
+			end
+			
       @default_payload = options
     end
-
+		
     def ping message, options={}
       if message.is_a?(Hash)
         message, options = nil, message
